@@ -1,0 +1,25 @@
+name: Checkmarx Security Scan
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+  push:
+    branches:
+      - '**'
+jobs:
+  build:
+    name: Checkmarx Security Scan
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref_name == github.event.repository.default_branch)
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Checkmarx - Scan Execution (Results)
+        uses: checkmarx/ast-github-action@main
+        with:
+          project_name: ${{ github.repository }}
+          github_token: ${{ secrets.CX_GITHUB_TOKEN }}
+          cx_tenant: ${{ secrets.CX_TENANT }}
+          base_uri:  ${{ secrets.CX_BASE_URI }}
+          cx_client_id: ${{ secrets.CX_CLIENT_ID }}
+          cx_client_secret: ${{ secrets.CX_CLIENT_SECRET }}
+          additional_params: ${{ vars.CX_ADDITIONAL_PARAMETERS }}   
